@@ -79,11 +79,11 @@ using (var scope = app.Services.CreateScope())
             eventDb.Database.EnsureCreated();
         }
 
-        Console.WriteLine("✅ Account Service: Database migrations applied");
+        Console.WriteLine("Account Service: Database migrations applied");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error applying migrations: {ex.Message}");
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
     }
 }
 

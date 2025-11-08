@@ -10,7 +10,7 @@ public static class HealthEndpoints
             service = "Account Service",
             timestamp = DateTime.UtcNow
         }))
-        .WithName("HealthCheck");
-        // .WithOpenApi();
+        .WithName("HealthCheck")
+        .WithOpenApi();
     }
 }
