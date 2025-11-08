@@ -21,6 +21,13 @@ services:
       - prometheus
     networks:
       - banking-network
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "6831:6831/udp" # UDP sender (from OpenTelemetry SDKs)
+    networks:
+      - banking-network   # or your shared network name
 
 networks:
   banking-network:

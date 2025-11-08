@@ -4,6 +4,8 @@ using TransactionService.Endpoints;
 using TransactionService.Services;
 using TransactionService.Middlewares;
 using Prometheus;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,20 @@ builder.Services.AddHttpClient<IAccountServiceClient, AccountServiceClient>(clie
     client.BaseAddress = new Uri(builder.Configuration["Services:AccountService"] ?? "http://localhost:5199");
     client.Timeout = TimeSpan.FromSeconds(10);
 });
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("TransactionService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddJaegerExporter(options =>
+            {
+                options.AgentHost = "localhost"; // docker compose service name (or "localhost" if running locally)
+                options.AgentPort = 6831;
+            });
+    });
 
 // Services
 builder.Services.AddSingleton<KafkaProducerService>();

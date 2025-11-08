@@ -3,6 +3,8 @@ using AccountService.Services;
 using AccountService.Endpoints;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,20 @@ builder.Services.AddDbContext<EventStoreContext>(options =>
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
 
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing =>
+    {
+        tracing
+            .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("AccountService"))
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddJaegerExporter(options =>
+            {
+                options.AgentHost = "localhost"; // docker compose service name (or "localhost" if running locally)
+                options.AgentPort = 6831;
+            });
+    });
+
 // Services
 builder.Services.AddSingleton<IKafkaProducerService, KafkaProducerService>();
 builder.Services.AddScoped<IEventStore, EventStore>();
@@ -43,7 +59,7 @@ builder.Services.AddHostedService<OutboxProcessor>();
 builder.Services.AddHostedService<KafkaConsumerService>();
 
 // MediatR for CQRS
-builder.Services.AddMediatR(cfg => 
+builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 var app = builder.Build();
