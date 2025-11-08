@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'accountservice'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:5199']
+
+  - job_name: 'transactionservice'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:5002']
+
+  - job_name: 'apigateway'
+    metrics_path: '/metrics'
+    static_configs:
+      - targets: ['host.docker.internal:5050']

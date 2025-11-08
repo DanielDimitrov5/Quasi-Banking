@@ -1,0 +1,37 @@
+import { writable } from 'svelte/store';
+
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
+
+export interface Toast {
+    id: string;
+    message: string;
+    type: ToastType;
+}
+
+function createToastStore() {
+    const { subscribe, update } = writable<Toast[]>([]);
+
+    return {
+        subscribe,
+        show: (message: string, type: ToastType = 'info', duration = 5000) => {
+            const id = Math.random().toString(36).substring(2, 9);
+            const toast: Toast = { id, message, type };
+
+            update((toasts) => [...toasts, toast]);
+
+            if (duration > 0) {
+                setTimeout(() => {
+                    update((toasts) => toasts.filter((t) => t.id !== id));
+                }, duration);
+            }
+        },
+        dismiss: (id: string) => {
+            update((toasts) => toasts.filter((t) => t.id !== id));
+        },
+        clear: () => {
+            update(() => []);
+        }
+    };
+}
+
+export const toast = createToastStore();
