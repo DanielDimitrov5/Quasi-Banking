@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Services;
 
+// Background service to process outbox messages
+// Processes pending outbox messages and publishes them to Kafka
 public class OutboxProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
@@ -70,17 +72,17 @@ public class OutboxProcessor : BackgroundService
 
                 message.Status = OutboxStatus.Completed;
                 message.ProcessedAt = DateTime.UtcNow;
-                
+
                 _logger.LogInformation($"Published message {message.Id}");
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Failed to publish message {message.Id}");
-                
+
                 message.RetryCount++;
                 message.Error = ex.Message;
-                message.Status = message.RetryCount >= _maxRetries 
-                    ? OutboxStatus.Failed 
+                message.Status = message.RetryCount >= _maxRetries
+                    ? OutboxStatus.Failed
                     : OutboxStatus.Pending;
             }
 

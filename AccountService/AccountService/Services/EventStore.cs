@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Services;
 
+// Implementation of the event store
+// Used to save and retrieve events
 public class EventStore : IEventStore
 {
     private readonly EventStoreContext _context;

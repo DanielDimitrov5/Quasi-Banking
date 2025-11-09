@@ -5,7 +5,6 @@ using AccountService.Services;
 using AccountService.Tests.Helpers;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace AccountService.Tests.Commands;
 

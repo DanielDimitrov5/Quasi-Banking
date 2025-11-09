@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using AccountService.Models;
 using FluentAssertions;
-using Xunit;
 
 namespace AccountService.IntegrationTests;
 

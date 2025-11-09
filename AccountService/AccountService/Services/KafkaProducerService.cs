@@ -2,6 +2,7 @@ using Confluent.Kafka;
 
 namespace AccountService.Services;
 
+// Service to produce Kafka messages for account events
 public class KafkaProducerService : IKafkaProducerService, IDisposable
 {
     private readonly IProducer<string, string> _producer;
@@ -31,11 +32,11 @@ public class KafkaProducerService : IKafkaProducerService, IDisposable
             };
 
             var result = await _producer.ProduceAsync(topic, message);
-            _logger.LogInformation($"✅ Event published to {result.TopicPartitionOffset}");
+            _logger.LogInformation($"Event published to {result.TopicPartitionOffset}");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Error publishing event to Kafka");
+            _logger.LogError(ex, "Error publishing event to Kafka");
             throw;
         }
     }

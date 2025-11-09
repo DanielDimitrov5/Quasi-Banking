@@ -19,7 +19,7 @@ public static class AccountEndpoints
                 request.InitialDeposit
             );
 
-            var account = await mediator.Send(command);
+            AccountResponse account = await mediator.Send(command);
             return Results.Created($"/api/accounts/{account.Id}", account);
         })
         .WithName("CreateAccount")
@@ -27,8 +27,8 @@ public static class AccountEndpoints
 
         group.MapGet("/{id}", async (string id, IMediator mediator) =>
         {
-            var query = new GetAccountQuery(id);
-            var account = await mediator.Send(query);
+            GetAccountQuery query = new GetAccountQuery(id);
+            AccountResponse? account = await mediator.Send(query);
 
             return account is not null ? Results.Ok(account) : Results.NotFound();
         })

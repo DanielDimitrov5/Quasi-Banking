@@ -4,6 +4,7 @@ using AccountService.Models;
 using AccountService.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AccountService.Commands;
 
@@ -20,12 +21,15 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
         _eventStore = eventStore;
     }
 
+    // Handle the command to create a new account
     public async Task<AccountResponse> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
-        var strategy = _dbContext.Database.CreateExecutionStrategy();
+        // Create an execution strategy for handling retries
+        IExecutionStrategy strategy = _dbContext.Database.CreateExecutionStrategy();
 
         return await strategy.ExecuteAsync(async () =>
         {
+            // Begin a new transaction
             using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
 
             try
@@ -48,6 +52,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
                     InitialDeposit = request.InitialDeposit
                 };
 
+                // Save the event to the event store
                 await _eventStore.SaveEventAsync(@event, account.Id);
 
                 _dbContext.Accounts.Add(account);
@@ -61,6 +66,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
                 };
                 _dbContext.OutboxMessages.Add(outboxMessage);
 
+                // Save changes to the database, commit the transaction
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
@@ -74,6 +80,7 @@ public class CreateAccountCommandHandler : IRequestHandler<CreateAccountCommand,
             }
             catch
             {
+                // Rollback the transaction in case of an error
                 await transaction.RollbackAsync(cancellationToken);
                 throw;
             }

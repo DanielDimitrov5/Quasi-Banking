@@ -2,11 +2,12 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Confluent.Kafka;
 using AccountService.Data;
-using AccountService.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace AccountService.Services;
 
+// Background service to consume Kafka messages
+// and update account balances accordingly
 public class KafkaConsumerService : BackgroundService
 {
     private IConsumer<string, string>? _consumer;
@@ -51,17 +52,17 @@ public class KafkaConsumerService : BackgroundService
 
             _consumer = new ConsumerBuilder<string, string>(config).Build();
             _consumer.Subscribe("banking-events");
-            
-            _logger.LogInformation("🎧 Account Service: Kafka consumer started successfully");
+
+            _logger.LogInformation("Account Service: Kafka consumer started successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "❌ Failed to initialize Kafka consumer. Will retry...");
-            
+            _logger.LogError(ex, "Failed to initialize Kafka consumer. Will retry...");
+
             // Don't throw - let the service continue running
             // The consumer will retry connection
             await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
-            
+
             // Retry initialization
             try
             {
@@ -75,18 +76,18 @@ public class KafkaConsumerService : BackgroundService
 
                 _consumer = new ConsumerBuilder<string, string>(config).Build();
                 _consumer.Subscribe("banking-events");
-                _logger.LogInformation("🎧 Kafka consumer connected on retry");
+                _logger.LogInformation("Kafka consumer connected on retry");
             }
             catch (Exception retryEx)
             {
-                _logger.LogError(retryEx, "❌ Kafka consumer failed to start after retry. Service will continue without consumer.");
+                _logger.LogError(retryEx, "Kafka consumer failed to start after retry. Service will continue without consumer.");
                 return; // Exit gracefully without crashing the app
             }
         }
 
         if (_consumer == null)
         {
-            _logger.LogWarning("⚠️ Kafka consumer not initialized. Exiting consumer service.");
+            _logger.LogWarning("Kafka consumer not initialized. Exiting consumer service.");
             return;
         }
 
@@ -95,10 +96,10 @@ public class KafkaConsumerService : BackgroundService
             try
             {
                 var consumeResult = _consumer.Consume(TimeSpan.FromSeconds(1));
-                
+
                 if (consumeResult == null)
                     continue;
-                
+
                 using var scope = _serviceProvider.CreateScope();
                 var dbContext = scope.ServiceProvider.GetRequiredService<AccountDbContext>();
 
@@ -109,13 +110,13 @@ public class KafkaConsumerService : BackgroundService
 
                     if (eventData == null || !eventData.ContainsKey("EventType"))
                     {
-                        _logger.LogWarning("⚠️ Skipping message with no EventType");
+                        _logger.LogWarning("Skipping message with no EventType");
                         _consumer.Commit(consumeResult);
                         continue;
                     }
 
                     var eventType = eventData["EventType"].GetString();
-                    _logger.LogInformation($"📨 Received event: {eventType}");
+                    _logger.LogInformation($"Received event: {eventType}");
 
                     if (eventType == "TransactionProcessedEvent")
                     {
@@ -132,26 +133,26 @@ public class KafkaConsumerService : BackgroundService
                 }
                 catch (JsonException jsonEx)
                 {
-                    _logger.LogWarning(jsonEx, 
-                        $"⚠️ Skipping malformed message at offset {consumeResult.Offset}");
+                    _logger.LogWarning(jsonEx,
+                        $"Skipping malformed message at offset {consumeResult.Offset}");
                     _consumer.Commit(consumeResult);
                 }
             }
             catch (ConsumeException ex)
             {
-                _logger.LogError(ex, "❌ Kafka consume error");
+                _logger.LogError(ex, "Kafka consume error");
                 await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "❌ Error processing event");
+                _logger.LogError(ex, "Error processing event");
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
             }
         }
     }
 
     private async Task UpdateAccountBalance(
-        AccountDbContext dbContext, 
+        AccountDbContext dbContext,
         TransactionProcessedEventDto transactionEvent)
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -159,7 +160,7 @@ public class KafkaConsumerService : BackgroundService
         await strategy.ExecuteAsync(async () =>
         {
             using var transaction = await dbContext.Database.BeginTransactionAsync();
-            
+
             try
             {
                 var account = await dbContext.Accounts
@@ -167,7 +168,7 @@ public class KafkaConsumerService : BackgroundService
 
                 if (account == null)
                 {
-                    _logger.LogWarning($"⚠️ Account {transactionEvent.AccountId} not found");
+                    _logger.LogWarning($"Account {transactionEvent.AccountId} not found");
                     return;
                 }
 
@@ -179,12 +180,12 @@ public class KafkaConsumerService : BackgroundService
                 await transaction.CommitAsync();
 
                 _logger.LogInformation(
-                    $"✅ Updated account {account.Id} balance: {previousBalance:C} → {account.Balance:C} (Change: {transactionEvent.Amount:C})");
+                    $"Updated account {account.Id} balance: {previousBalance:C} → {account.Balance:C} (Change: {transactionEvent.Amount:C})");
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                _logger.LogError(ex, $"❌ Failed to update balance for account {transactionEvent.AccountId}");
+                _logger.LogError(ex, $"Failed to update balance for account {transactionEvent.AccountId}");
                 throw;
             }
         });

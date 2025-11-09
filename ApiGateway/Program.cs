@@ -76,5 +76,5 @@ app.MapHealthEndpoints();
 // Map reverse proxy (this should be last)
 app.MapReverseProxy();
 
-Console.WriteLine("🚀 API Gateway starting on http://localhost:5050");
+Console.WriteLine("API Gateway starting on http://localhost:5050");
 app.Run();

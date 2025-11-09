@@ -4,7 +4,6 @@ using AccountService.Services;
 using AccountService.Tests.Helpers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Xunit;
 
 namespace AccountService.Tests.Services;
 

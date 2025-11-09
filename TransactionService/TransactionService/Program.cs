@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using Prometheus;
 using TransactionService.Data;
 using TransactionService.Endpoints;
-using TransactionService.Middlewares;
 using TransactionService.Services;
+using TransactionService.Middlewares;
+using Prometheus;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,11 +76,11 @@ using (var scope = app.Services.CreateScope())
         transactionDb.Database.Migrate();
         eventDb.Database.Migrate();
 
-        Console.WriteLine("✅ Transaction Service: Database migrations applied");
+        Console.WriteLine("Transaction Service: Database migrations applied");
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error applying migrations: {ex.Message}");
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
     }
 }
 

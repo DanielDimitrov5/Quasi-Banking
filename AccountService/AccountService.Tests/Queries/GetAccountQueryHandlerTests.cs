@@ -3,7 +3,6 @@ using AccountService.Models;
 using AccountService.Queries;
 using AccountService.Tests.Helpers;
 using FluentAssertions;
-using Xunit;
 
 namespace AccountService.Tests.Queries;
 
