@@ -12,10 +12,10 @@ export const startConsumer = async () => {
     
     try {
         await consumer.connect();
-        console.log('🎧 Notification Service: Connected to Kafka');
+        console.log('Notification Service: Connected to Kafka');
 
         await consumer.subscribe({ topic: 'banking-events', fromBeginning: true });
-        console.log('📬 Subscribed to "banking-events" topic');
+        console.log('Subscribed to "banking-events" topic');
 
         await consumer.run({
             eachMessage: async ({ topic, partition, message }: EachMessagePayload) => {
@@ -33,15 +33,15 @@ export const startConsumer = async () => {
                             handleTransactionProcessed(event as TransactionProcessedEvent);
                             break;
                         default:
-                            console.warn(`⚠️ Unknown event type: ${event.EventType}`);
+                            console.warn(`Unknown event type: ${event.EventType}`);
                     }
                 } catch (jsonError) {
-                    console.error('❌ Failed to parse message', jsonError);
+                    console.error('Failed to parse message', jsonError);
                 }
             },
         });
     } catch (error) {
-        console.error('❌ Failed to start consumer', error);
+        console.error('Failed to start consumer', error);
         // Implement retry logic if needed
         setTimeout(startConsumer, 5000);
     }
@@ -68,14 +68,14 @@ const handleTransactionProcessed = (event: TransactionProcessedEvent) => {
     const recipientEmail = "user@example.com"; 
     
     const message = `
-    =========================================
+    ==========================================
      transactionalert
     To: ${recipientEmail} (for Account ID: ${event.AccountId})
     Subject: Transaction Alert
 
     An amount of $${amount.toFixed(2)} has been ${action}.
     Description: ${event.Description}
-    =========================================
+    ==========================================
     `;
     console.log(message);
 };

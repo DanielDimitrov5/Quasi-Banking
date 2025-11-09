@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using TransactionService.Data;
-using TransactionService.Endpoints;
-using TransactionService.Services;
-using TransactionService.Middlewares;
-using Prometheus;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Prometheus;
+using TransactionService.Data;
+using TransactionService.Endpoints;
+using TransactionService.Middlewares;
+using TransactionService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

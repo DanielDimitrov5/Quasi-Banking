@@ -47,7 +47,7 @@ builder.Services.AddOpenTelemetry()
             .AddHttpClientInstrumentation()
             .AddJaegerExporter(options =>
             {
-                options.AgentHost = "localhost"; // docker compose service name (or "localhost" if running locally)
+                options.AgentHost = "localhost";
                 options.AgentPort = 6831;
             });
     });
