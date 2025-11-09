@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TransactionService.Data;
 
+// Event store context for storing events
 public class EventStoreContext : DbContext
 {
     public EventStoreContext(DbContextOptions<EventStoreContext> options) : base(options) { }

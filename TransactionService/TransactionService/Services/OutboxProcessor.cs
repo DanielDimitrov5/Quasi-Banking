@@ -4,6 +4,7 @@ using TransactionService.Models;
 
 namespace TransactionService.Services;
 
+// Background service to process outbox messages and publish events to Kafka
 public class OutboxProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
@@ -70,7 +71,7 @@ public class OutboxProcessor : BackgroundService
 
                 message.Status = OutboxStatus.Completed;
                 message.ProcessedAt = DateTime.UtcNow;
-                
+
                 _logger.LogInformation($"Published message {message.Id}");
             }
             catch (Exception ex)
@@ -79,8 +80,8 @@ public class OutboxProcessor : BackgroundService
 
                 message.RetryCount++;
                 message.Error = ex.Message;
-                message.Status = message.RetryCount >= _maxRetries 
-                    ? OutboxStatus.Failed 
+                message.Status = message.RetryCount >= _maxRetries
+                    ? OutboxStatus.Failed
                     : OutboxStatus.Pending;
             }
 

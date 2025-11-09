@@ -63,7 +63,7 @@ public class ProcessWithdrawalCommandHandler : IRequestHandler<ProcessWithdrawal
             throw new InsufficientFundsException(account.Balance, request.Amount);
         }
 
-        _logger.LogInformation($"✅ Account validated. Balance: {account.Balance:C}, Withdrawal: {request.Amount:C}");
+        _logger.LogInformation($"Account validated. Balance: {account.Balance:C}, Withdrawal: {request.Amount:C}");
 
         using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
         
@@ -104,7 +104,7 @@ public class ProcessWithdrawalCommandHandler : IRequestHandler<ProcessWithdrawal
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            _logger.LogInformation($"✅ Withdrawal processed: {request.Amount:C} from account {txn.AccountId}");
+            _logger.LogInformation($"Withdrawal processed: {request.Amount:C} from account {txn.AccountId}");
 
             return new TransactionResponse(
                 txn.Id,

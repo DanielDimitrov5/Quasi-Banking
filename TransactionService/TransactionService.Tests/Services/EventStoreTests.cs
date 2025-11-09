@@ -4,7 +4,6 @@ using TransactionService.Data;
 using TransactionService.Models;
 using TransactionService.Services;
 using TransactionService.Tests.Helpers;
-using Xunit;
 
 namespace TransactionService.Tests.Services;
 

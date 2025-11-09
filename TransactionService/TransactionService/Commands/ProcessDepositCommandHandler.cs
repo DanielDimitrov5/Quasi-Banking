@@ -58,7 +58,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             throw new AccountNotFoundException(request.AccountId);
         }
 
-        _logger.LogInformation($"✅ Account validated. Owner: {account.OwnerEmail}, Balance: {account.Balance:C}");
+        _logger.LogInformation($"Account validated. Owner: {account.OwnerEmail}, Balance: {account.Balance:C}");
 
         // ===== PROCESS TRANSACTION (SIMPLE VERSION WITHOUT RETRY) =====
 
@@ -101,7 +101,7 @@ public class ProcessDepositCommandHandler : IRequestHandler<ProcessDepositComman
             await _dbContext.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            _logger.LogInformation($"✅ Deposit processed: {txn.Amount:C} to account {txn.AccountId}");
+            _logger.LogInformation($"Deposit processed: {txn.Amount:C} to account {txn.AccountId}");
 
             return new TransactionResponse(
                 txn.Id,
