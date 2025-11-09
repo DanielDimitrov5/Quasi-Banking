@@ -17,7 +17,7 @@ public class RequestLoggingMiddleware
         var requestPath = context.Request.Path;
         var requestMethod = context.Request.Method;
 
-        _logger.LogInformation($"🌐 Incoming: {requestMethod} {requestPath}");
+        _logger.LogInformation($"Incoming: {requestMethod} {requestPath}");
 
         try
         {
@@ -39,7 +39,7 @@ public class RequestLoggingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"❌ Error processing {requestMethod} {requestPath}");
+            _logger.LogError(ex, $"Error processing {requestMethod} {requestPath}");
             throw;
         }
     }

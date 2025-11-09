@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TransactionService", "Trans
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionService", "TransactionService\TransactionService\TransactionService.csproj", "{7677DC9F-F89B-4344-B5C0-58D6AD559157}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{6CF9E255-2148-4968-BE0C-071279C46984}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway\ApiGateway.csproj", "{6CF9E255-2148-4968-BE0C-071279C46984}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountService.Tests", "AccountService\AccountService.Tests\AccountService.Tests.csproj", "{4B2950D3-9134-4642-BD27-4F530426C36A}"
 EndProject

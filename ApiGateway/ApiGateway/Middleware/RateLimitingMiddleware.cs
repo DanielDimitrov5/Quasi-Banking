@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 
 namespace ApiGateway.Middleware;
 
+// Rate limiting middleware
+/// Limits the number of requests from a single IP address within a time window
 public class RateLimitingMiddleware
 {
     private readonly RequestDelegate _next;
@@ -30,7 +32,7 @@ public class RateLimitingMiddleware
             {
                 if (info.Count >= _maxRequests)
                 {
-                    _logger.LogWarning($"⛔ Rate limit exceeded for {clientIp}");
+                    _logger.LogWarning($"Rate limit exceeded for {clientIp}");
                     context.Response.StatusCode = 429; // Too Many Requests
                     await context.Response.WriteAsJsonAsync(new
                     {

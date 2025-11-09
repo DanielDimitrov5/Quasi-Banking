@@ -39,7 +39,7 @@ builder.Services.AddOpenTelemetry()
             .AddHttpClientInstrumentation()
             .AddJaegerExporter(options =>
             {
-                options.AgentHost = "localhost"; // docker compose service name (or "localhost" if running locally)
+                options.AgentHost = "localhost";
                 options.AgentPort = 6831;
             });
     });
@@ -78,3 +78,5 @@ app.MapReverseProxy();
 
 Console.WriteLine("API Gateway starting on http://localhost:5050");
 app.Run();
+
+public partial class Program { }
